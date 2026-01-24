@@ -1,21 +1,9 @@
 import math
 
 #todo
-#go backwards ( sequence to rational )
 #possibly a way to visualize the PSL_2(Z)
 
-def gen_farey_0_to_1(n):
-    seq = set()
-    if n < 2:
-        return seq
-    for denominator in range(2, n+1):
-        for numerator in range(1, denominator):
-            gcd = math.gcd(numerator, denominator)
-            seq.add((numerator//gcd, denominator//gcd))
-
-    return list(seq)
-
-def gen_farey_natural(n):
+def gen_farey(n):
     seq = [(0,1),(1,1)]
     for i in range(0, n):
         newLayer = []
@@ -30,11 +18,10 @@ def gen_scf(n):
     seq = []
 
     if n[0] < n[1]:
-        seq.append(0)
+        seq.append((0,0))
 
         num = n[0]
         den = n[1]
-
     else:
         num = n[1]
         den = n[0]
@@ -45,10 +32,9 @@ def gen_scf(n):
         den = tmp
 
         a = math.floor(num / den)
-        seq.append(a)
+        seq.append((a,0))
         num = num - (a * den)
-
-    seq.append(den)
+    seq.append((den,0))
 
     return seq
 
@@ -60,7 +46,6 @@ def gen_nicf(n):
 
         num = n[0]
         den = n[1]
-
     else:
         num = n[1]
         den = n[0]
@@ -79,12 +64,11 @@ def gen_nicf(n):
         else:
             seq.append((a_ceil, 1))
             num = (a_ceil * den) - num
-
     seq.append((den, 0))
 
     return seq
 
-def nicf_to_frac(seq):
+def seq_to_frac(seq):
     seq.reverse()
 
     num = 1
@@ -102,27 +86,23 @@ def nicf_to_frac(seq):
 
     return (den, num)
 
-def scf_to_frac(seq):
-    seq.reverse()
+def gen_convergents(seq):
+    convergents = []
+    for i in range(1, len(seq)+1):
+        convergents.append(seq_to_frac(seq[:i]))
+    return convergents
 
-    num = 1
-    den = seq[0]
+farey_sequence = gen_farey(15)[1:-1]
 
-    for i in range(1, len(seq)):
-        tmp = den
-        den = (den * seq[i]) + num
-        num = tmp
+for frac in farey_sequence:
+    scf = gen_scf(frac)
+    nicf = gen_nicf(frac)
 
-    return (den, num)
+    if len(scf) != len(nicf):
+        scf_convergents = gen_convergents(scf)
+        nicf_convergents = gen_convergents(nicf)
 
-
-#MAIN
-
-farey_seq = gen_farey_natural(15)[1:-1]
-
-for fraction in farey_seq:
-    scf = gen_scf(fraction)
-    nicf = gen_nicf(fraction)
-    print(fraction, scf, nicf, len(scf), len(nicf))
-
+        print(frac)
+        print(scf_convergents)
+        print(nicf_convergents)
 
