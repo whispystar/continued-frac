@@ -1,7 +1,4 @@
-import math
-
-#todo
-#possibly a way to visualize the PSL_2(Z)
+import math, random
 
 def gen_farey(n):
     seq = [(0,1),(1,1)]
@@ -92,17 +89,44 @@ def gen_convergents(seq):
         convergents.append(seq_to_frac(seq[:i]))
     return convergents
 
-farey_sequence = gen_farey(15)[1:-1]
+def frac_diff(f1, f2):
+    num = f2[0]*f1[1] - f1[0]*f2[1] 
+    den = f1[1]*f2[1]
 
-for frac in farey_sequence:
-    scf = gen_scf(frac)
-    nicf = gen_nicf(frac)
+    divisor = math.gcd(num, den)
+    return (num//divisor, den//divisor)
 
-    if len(scf) != len(nicf):
-        scf_convergents = gen_convergents(scf)
-        nicf_convergents = gen_convergents(nicf)
+'''
+frac = (50,127)
+print(frac)
+print("SCF: ", end="")
+print(gen_scf(frac))
+convergents = gen_convergents(gen_scf(frac))
 
-        print(frac)
-        print(scf_convergents)
-        print(nicf_convergents)
+#for i in range(0, len(convergents)-1):
+#    print(frac_diff(convergents[i], convergents[i+1]))
+print(convergents)
+#for con in convergents:
+#    if con != (0,1):
+#        print(con)
+#        print(gen_scf(con))
+#        print(gen_nicf(con))
+print("NICF: ", end="")
+print(gen_nicf(frac))
+print(gen_convergents(gen_nicf(frac)))
+print()
 
+'''
+
+farey_seq = gen_farey(10)[1:-1]
+
+for i in range(0, 10):
+    frac = farey_seq[random.randint(0,len(farey_seq))]
+    print(frac)
+    print("SCF: ", end="")
+    print(gen_scf(frac))
+    print(gen_convergents(gen_scf(frac)))
+    print("NICF: ", end="")
+    print(gen_nicf(frac))
+    print(gen_convergents(gen_nicf(frac)))
+    print()
