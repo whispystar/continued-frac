@@ -35,6 +35,30 @@ def gen_scf(n):
 
     return seq
 
+def gen_nscf(n):
+    seq = []
+
+    if n[0] < n[1]:
+        seq.append((0,0))
+
+        num = n[0]
+        den = n[1]
+    else:
+        num = n[1]
+        den = n[0]
+
+    while num != 1:
+        tmp = num
+        num = den
+        den = tmp
+
+        a = math.ceil(num / den)
+        seq.append((a,1))
+        num = (a * den) - num
+    seq.append((den,0))
+
+    return seq
+
 def gen_nicf(n):
     seq = []
 
@@ -122,11 +146,30 @@ farey_seq = gen_farey(10)[1:-1]
 
 for i in range(0, 10):
     frac = farey_seq[random.randint(0,len(farey_seq))]
+    #frac = (143147,496350)
+    scf_con = gen_convergents(gen_scf(frac))
+    nscf_con = gen_convergents(gen_nscf(frac))
+    nicf_con = gen_convergents(gen_nicf(frac))
     print(frac)
     print("SCF: ", end="")
     print(gen_scf(frac))
-    print(gen_convergents(gen_scf(frac)))
+    print(scf_con)
+
+    scf_con_diff = []
+    for i in range(0, len(scf_con)-1):
+        scf_con_diff.append(frac_diff(scf_con[i], scf_con[i+1]))
+    print(scf_con_diff)
     print("NICF: ", end="")
     print(gen_nicf(frac))
-    print(gen_convergents(gen_nicf(frac)))
+    print(nicf_con)
+
+    nicf_con_diff = []
+    for i in range(0, len(nicf_con)-1):
+        nicf_con_diff.append(frac_diff(nicf_con[i], nicf_con[i+1]))
+    print(nicf_con_diff)
+
+    print("NSCF: ", end = "")
+    print(gen_nscf(frac))
+    print(nscf_con)
     print()
+
