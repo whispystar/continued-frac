@@ -1,0 +1,79 @@
+import matplotlib.pyplot as plt
+from fractions import Fraction
+import numpy as np
+import math
+def draw_geodesic_sqrt(x1, x2, color="black", lw=1): #Function that plots and draws all the geodesics
+    x1, x2 = float(x1), float(x2)
+    center = (x1 + x2) / 2
+    radius = abs(x2 - x1) / 2
+    xs = np.linspace(x1, x2, 1000)
+    ys = np.sqrt(np.clip(radius**2 - (xs - center)**2, 0, None))
+    plt.plot(xs, ys, color=color, lw=lw)
+    
+    
+def draw_farey_tessellation(seq):
+    unique = set()
+    for i in range(len(seq)):
+        for j in range(i + 1, len(seq)):
+            a, b = seq[i], seq[j]
+            if abs(a.numerator * b.denominator - b.numerator * a.denominator) == 1: # determinant ad - bc = 1
+                pair = tuple(sorted([a, b]))
+                if pair not in unique:
+                    draw_geodesic_sqrt(a, b)
+                    unique.add(pair)
+k = 3 #Row of the farey fractions we're plotting
+a = -1 #Left Bound of the graph
+b = 2 #Right Bound of the graph
+x = Fraction(5,3)
+plt.figure(figsize=(15, 10))
+plt.ylim(0, 2)
+plt.xlim(float(a) - 0.002, float(b) + 0.002)
+sequence = [Fraction(a), Fraction(b)]
+
+# Adds all intergers between a-b to the sequence
+for i in range(a,b):
+    if Fraction(i) not in sequence:
+        sequence.append(Fraction(i))
+        sequence.sort()
+#This loop generates the farey fraction to the kth row
+for i in range(k):
+    array = []
+    for i in range(len(sequence)-1):
+      a, b = sequence[i], sequence[i + 1]
+      neighbor = Fraction(a.numerator + b.numerator, a.denominator + b.denominator) #Fraction(a+b / c+d)
+      array.append(a)
+      array.append(neighbor)
+    array.append(sequence[-1])
+    sequence = array
+
+draw_farey_tessellation(sequence)
+for n in range(int(np.floor(float(a)))-3, int(np.ceil(float(b))) + 1):
+    if n == 0:
+        plt.axvline(n, color="blue")
+    else:
+        plt.axvline(n, color="black")
+        plt.axvline(-n, color="black")
+plt.axhline(0.0001, color="black")
+plt.yticks([])
+draw_geodesic_sqrt(-1/x, x, color="red", lw=1.5)
+xticks = [float(frac) for frac in sequence] + [float(x)] + [float(-1/x)]
+#xticklabels = [f"$\\frac{{{frac.numerator}}}{{{frac.denominator}}}$" if frac.denominator != 1 else f"${frac.numerator}$" for frac in sequence] + [r"$\gamma+$"] #+ [r"$\gamma-$"]
+xticklabels = []
+for frac in sequence:
+    if frac.denominator != 1:
+        xticklabels.append(f"$\\frac{{{frac.numerator}}}{{{frac.denominator}}}$")
+    else:
+        xticklabels.append(f"${frac.numerator}$")
+xticklabels += [r"$\gamma+$"]
+plt.xticks([float(frac) for frac in sequence] + [float(x)], xticklabels, rotation=0)
+for label in plt.gca().get_xticklabels():
+    if "\\" in label.get_text():
+        label.set_fontsize(14)    # larger font
+    if "gamma" in label.get_text():
+        label.set_fontsize(12)
+        label.set_color("red")
+    else:
+        label.set_fontsize(13)
+for spine in plt.gca().spines.values():
+    spine.set_visible(False)
+plt.show()
