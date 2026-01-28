@@ -1,4 +1,5 @@
 import math, random
+from fractions import Fraction
 
 def gen_farey(n):
     seq = [(0,1),(1,1)]
@@ -120,6 +121,19 @@ def frac_diff(f1, f2):
     divisor = math.gcd(num, den)
     return (num//divisor, den//divisor)
 
+def latex(cf):
+    cmd ="\\nicf{"
+    cmd = cmd + str(cf[0][0]) + '}{'
+
+    for i in cf[1:]:
+
+        if i[1] == 0:
+            cmd = cmd + str(1) +'/' + str(i[0]) +','
+        elif i[1] ==1 : 
+            cmd = cmd + '-' + str(1) +'/' + str(i[0]) +','
+    
+    return cmd[0:-1] + '}'
+
 '''
 frac = (50,127)
 print(frac)
@@ -153,6 +167,9 @@ for i in range(0, 10):
     print(frac)
     print("SCF: ", end="")
     print(gen_scf(frac))
+    print("LaTeX: ", end='') 
+    print(latex(gen_scf(frac)))
+    print("Convergents: ", end="")
     print(scf_con)
 
     scf_con_diff = []
@@ -161,6 +178,9 @@ for i in range(0, 10):
     print(scf_con_diff)
     print("NICF: ", end="")
     print(gen_nicf(frac))
+    print("LaTeX: ", end='') 
+    print(latex(gen_nicf(frac)))
+    print("Convergents: ", end="")
     print(nicf_con)
 
     nicf_con_diff = []
@@ -170,6 +190,9 @@ for i in range(0, 10):
 
     print("NSCF: ", end = "")
     print(gen_nscf(frac))
+    print("LaTeX: ", end='') 
+    print(latex(gen_nscf(frac)))
+    print("Convergents: ", end="")
     print(nscf_con)
     print()
 
