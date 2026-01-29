@@ -1,0 +1,197 @@
+import math, random
+
+def gen_farey(n):
+    seq = [(0,1),(1,1)]
+    for i in range(0, n):
+        newLayer = []
+        for j in range(0, len(seq)-1):
+            newLayer.append(seq[j])
+            newLayer.append((seq[j][0] + seq[j+1][0], seq[j][1] + seq[j+1][1]))
+        newLayer.append((1,1))
+        seq = newLayer
+    return seq
+
+def gen_scf(n):
+    seq = []
+
+    if n[0] < n[1]:
+        seq.append((0,0))
+
+        num = n[0]
+        den = n[1]
+    else:
+        num = n[1]
+        den = n[0]
+
+    while num != 1:
+        tmp = num
+        num = den
+        den = tmp
+
+        a = math.floor(num / den)
+        seq.append((a,0))
+        num = num - (a * den)
+    seq.append((den,0))
+
+    return seq
+
+def gen_nscf(n):
+    seq = []
+
+    if n[0] < n[1]:
+        seq.append((0,0))
+
+        num = n[0]
+        den = n[1]
+    else:
+        num = n[1]
+        den = n[0]
+
+    while num != 1:
+        tmp = num
+        num = den
+        den = tmp
+
+        a = math.ceil(num / den)
+        seq.append((a,1))
+        num = (a * den) - num
+    seq.append((den,0))
+
+    return seq
+
+def gen_nicf(n):
+    seq = []
+
+    if n[0] < n[1]:
+        seq.append((0, 0))
+
+        num = n[0]
+        den = n[1]
+    else:
+        num = n[1]
+        den = n[0]
+
+    while num != 1:
+        tmp = num
+        num = den
+        den = tmp
+
+        a_floor = math.floor(num / den)
+        a_ceil = math.ceil(num / den)
+
+        if abs((a_floor * den) - num) <= abs((a_ceil * den) - num):
+            seq.append((a_floor, 0))
+            num = num - (a_floor * den)
+        else:
+            seq.append((a_ceil, 1))
+            num = (a_ceil * den) - num
+    seq.append((den, 0))
+
+    return seq
+
+def seq_to_frac(seq):
+    seq.reverse()
+
+    num = 1
+    den = seq[0][0]
+
+    for i in range(1, len(seq)):
+        if seq[i][1] == 0:
+            tmp = den
+            den = (den * seq[i][0]) + num
+            num = tmp
+        else:
+            tmp = den
+            den = (den * seq[i][0]) - num
+            num = tmp
+
+    return (den, num)
+
+def gen_convergents(seq):
+    convergents = []
+    for i in range(1, len(seq)+1):
+        convergents.append(seq_to_frac(seq[:i]))
+    return convergents
+
+def frac_diff(f1, f2):
+    num = f2[0]*f1[1] - f1[0]*f2[1] 
+    den = f1[1]*f2[1]
+
+    divisor = math.gcd(num, den)
+    return (num//divisor, den//divisor)
+
+def gen_sum(con):
+    sum_seq = []
+    for i in range(0, len(con)-1):
+        sum_seq.append(frac_diff(con[i], con[i+1]))
+    return sum_seq
+
+
+farey_seq = gen_farey(20)[1:-1]
+
+for i in range(0, 10):
+    frac = farey_seq[random.randint(0, len(farey_seq))]
+
+    print(frac)
+    print(gen_convergents(gen_scf(frac)))
+    print(gen_sum(gen_convergents(gen_scf(frac))))
+    print(gen_sum(gen_convergents(gen_nicf(frac))))
+    print()
+
+
+'''
+for i in range(0, 10):
+    frac = farey_seq[random.randint(0,len(farey_seq))]
+
+    scf = gen_scf(frac)
+    nscf = gen_nscf(frac)
+    nicf = gen_nicf(frac)
+
+    scf_con = gen_convergents(scf)
+    nscf_con = gen_convergents(nscf)
+    nicf_con = gen_convergents(nicf)
+
+    scf_sum = gen_sum(scf_con)
+    nscf_sum = gen_sum(nscf_con)
+    nicf_sum = gen_sum(nicf_con)
+
+    print(frac)
+    print("SCF")
+    print(scf)
+    print(scf_con)
+    print(scf_sum)
+    print()
+    print("NICF")
+    print(nicf)
+    print(nicf_con)
+    print(nicf_sum)
+    print()
+    print("NSCF")
+    print(nscf)
+    print(nscf_con)
+    print(nscf_sum)
+    print()
+
+    print("SCF: ", end="")
+    print(gen_scf(frac))
+    print("CONVERGENTS: " + str(scf_con))
+
+    scf_con_diff = []
+    print("RELATIVE DIFFERENCE: ", end = "")
+    for i in range(0, len(scf_con)-1):
+        scf_con_diff.append(frac_diff(scf_con[i], scf_con[i+1]))
+    print(scf_con_diff)
+    print("NICF: ", end="")
+    print(gen_nicf(frac))
+    print(nicf_con)
+
+    nicf_con_diff = []
+    for i in range(0, len(nicf_con)-1):
+        nicf_con_diff.append(frac_diff(nicf_con[i], nicf_con[i+1]))
+    print(nicf_con_diff)
+
+    print("NSCF: ", end = "")
+    print(gen_nscf(frac))
+    print(nscf_con)
+    print()
+    '''
