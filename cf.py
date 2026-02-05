@@ -134,6 +134,22 @@ def latex(cf):
     
     return cmd[0:-1] + '}'
 
+def scf_to_ncf(seq):
+    new_seq = seq.copy()
+    ii = 1
+    end = len(new_seq)
+    while ii < end:
+        if new_seq[ii][0] == 1:
+            # Adjust terms adjacent to 1
+            new_seq[ii-1] = (new_seq[ii-1][0]+1,1)
+            new_seq[ii+1] = (new_seq[ii+1][0]+1,new_seq[ii+1][1])
+            # Remove 1 and adjust indexing to compensate
+            new_seq.pop(ii)
+            end -= 1
+            # this automatically moves to check ii + 2 index of the original seq, but this is fine because ii+1 is definitely not 1
+        ii += 1
+    return new_seq
+
 '''
 frac = (50,127)
 print(frac)
@@ -177,6 +193,8 @@ for i in range(0, 10):
         scf_con_diff.append(frac_diff(scf_con[i], scf_con[i+1]))
     print(scf_con_diff)
     print("NICF: ", end="")
+    print("SCF TO NICF:",end=" ")
+    print(scf_to_ncf(gen_scf(frac)))
     print(gen_nicf(frac))
     print("LaTeX: ", end='') 
     print(latex(gen_nicf(frac)))
